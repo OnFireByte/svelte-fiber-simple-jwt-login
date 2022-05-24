@@ -3,13 +3,13 @@ package controllers
 import (
 	"fmt"
 	"net/mail"
+	"os"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/google/uuid"
 	"github.com/onfirebyte/simple-jwt-login/db"
-	"github.com/onfirebyte/simple-jwt-login/env"
 	"github.com/onfirebyte/simple-jwt-login/models"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -103,7 +103,7 @@ func Login(c *fiber.Ctx) error{
 		ExpiresAt: time.Now().Add( 30*24* time.Hour ).Unix(),
 	})
 
-	token, err := claims.SignedString([]byte(env.JWT_SECRET_KEY))
+	token, err := claims.SignedString([]byte(os.Getenv("JWT_SIGNING_KEY")))
 	if err != nil {
 		fmt.Println("Error generating token for", user.Id,)
 		return c.Status(400).SendString("Error generating token")
