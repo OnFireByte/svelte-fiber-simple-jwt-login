@@ -135,7 +135,7 @@ func User(c *fiber.Ctx) error{
 		})
 	}
 	token, err := jwt.ParseWithClaims(cookie,&jwt.StandardClaims{},func(token *jwt.Token) (interface{},error){
-		return []byte(env.JWT_SECRET_KEY),nil
+		return []byte(os.Getenv("JWT_SIGNING_KEY")),nil
 	})
 
 	if err != nil {
