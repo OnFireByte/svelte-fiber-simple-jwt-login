@@ -85,8 +85,7 @@ func Login(c *fiber.Ctx) error{
 			Status:      models.ErrorUsernameNotFound,
 			Description: "Username not found",
 		}
-		c.Status(fiber.StatusNotFound)
-		return c.Status(401).JSON(errRes)
+		return c.Status(404).JSON(errRes)
 	}
 
 	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(loginData.Password)); err != nil {
@@ -94,8 +93,7 @@ func Login(c *fiber.Ctx) error{
 			Status:      models.ErrorPasswordNotMatch,
 			Description: "Password not match",
 		}
-		c.Status(fiber.StatusBadRequest)
-		return c.Status(401).JSON(errRes)
+		return c.Status(400).JSON(errRes)
 	}
 
 	claims := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.StandardClaims{
@@ -106,7 +104,7 @@ func Login(c *fiber.Ctx) error{
 	token, err := claims.SignedString([]byte(os.Getenv("JWT_SIGNING_KEY")))
 	if err != nil {
 		fmt.Println("Error generating token for", user.Uuid,)
-		return c.Status(400).SendString("Error generating token")
+		return c.Status(500).SendString("Error generating token")
 	}
 
 	cookie := fiber.Cookie{

@@ -19,12 +19,12 @@ func AddNote(c *fiber.Ctx) error {
 	if err != nil {
 		switch err.Error() {
 		case "No JWT cookie":
-			return c.Status(403).JSON(fiber.Map{
+			return c.Status(402).JSON(fiber.Map{
 						"status" : "no_jwt_cookie",
 						"message": "No JWT cookie, please login",
 					})
 		case "signature is invalid":
-			return c.Status(403).JSON(fiber.Map{
+			return c.Status(401).JSON(fiber.Map{
 						"status" : "login_unauthenticated",
 						"message": "signature is invalid",
 					})
@@ -39,7 +39,7 @@ func AddNote(c *fiber.Ctx) error {
 
 	dbErr := db.DB.Create(&note).Error
 	if dbErr != nil {
-		return c.Status(405).JSON(fiber.Map{
+		return c.Status(500).JSON(fiber.Map{
 			"status" : "db_error",
 			"message": "Something went wrong",
 		})
@@ -116,7 +116,7 @@ func UpdateNote(c *fiber.Ctx) error {
 
 	note_uuid,ok := data["uuid"]
 	if !ok{
-		return c.Status(401).JSON(fiber.Map{
+		return c.Status(402).JSON(fiber.Map{
 			"status" : "no_uuid",
 			"message": "note uuid field is empty",
 		})
@@ -136,7 +136,7 @@ func UpdateNote(c *fiber.Ctx) error {
 
 	dbData := db.DB.Model(&note).Where("owner_id = ?", User.ID).Update("content","status")
 	if dbData.Error != nil {
-		return c.Status(404).JSON(fiber.Map{
+		return c.Status(500).JSON(fiber.Map{
 			"status" : "update_error",
 			"message": dbData.Error.Error(),
 		})
@@ -184,7 +184,7 @@ func DeleteNote(c *fiber.Ctx) error {
 
 	note_uuid,ok := data["uuid"]
 	if !ok{
-		return c.Status(401).JSON(fiber.Map{
+		return c.Status(402).JSON(fiber.Map{
 			"status" : "no_uuid",
 			"message": "note uuid field is empty",
 		})
@@ -193,7 +193,7 @@ func DeleteNote(c *fiber.Ctx) error {
 
 	dbData := db.DB.Where("uuid = ?", note_uuid).Where("owner_id = ?",user.ID).Delete(&models.Note{})
 	if dbData.Error != nil {
-		return c.Status(404).JSON(fiber.Map{
+		return c.Status(500).JSON(fiber.Map{
 			"status" : "delete_error",
 			"message": dbData.Error.Error(),
 		})
