@@ -87,8 +87,8 @@ func SeeNote(c *fiber.Ctx) error{
 	return c.JSON(groups)
 }
 
-func UpdateNote(c *fiber.Ctx) error{
-	_, err := AuthCheck(c)
+func UpdateNote(c *fiber.Ctx) error {
+	User, err := AuthCheck(c)
 	if err != nil {
 		switch err.Error() {
 		case "No JWT cookie":
@@ -118,17 +118,12 @@ func UpdateNote(c *fiber.Ctx) error{
 	if !ok{
 		return c.Status(401).JSON(fiber.Map{
 			"status" : "no_uuid",
-			"message": "note uuid is empty",
+			"message": "note uuid field is empty",
 		})
 		
 	}
-	note := models.Note{}
-	dbErr := db.DB.Where("uuid = ?", note_uuid).First(&note).Error
-	if dbErr != nil {
-		return c.Status(404).JSON(fiber.Map{
-			"status" : "note_not_found",
-			"message": "note not found",
-		})
+	note := models.Note{
+		Uuid: note_uuid,
 	}
 
 	if content, ok := data["content"]; ok {
@@ -139,8 +134,20 @@ func UpdateNote(c *fiber.Ctx) error{
 		note.Status = models.NoteStatus(status)
 	}
 
-	dbErr = db.DB.UpdateColumns(&note).Error
-		
+	dbData := db.DB.Model(&note).Where("owner_id = ?", User.ID).Update("content","status")
+	if dbData.Error != nil {
+		return c.Status(404).JSON(fiber.Map{
+			"status" : "update_error",
+			"message": dbData.Error.Error(),
+		})
+	}
+	
+	if dbData.RowsAffected == 0 {
+		return c.Status(404).JSON(fiber.Map{
+			"status" : "note_not_found",
+			"message": "You don't have this note",
+		})
+	}
 
 	return c.JSON(fiber.Map{
 		"status" : "success",
