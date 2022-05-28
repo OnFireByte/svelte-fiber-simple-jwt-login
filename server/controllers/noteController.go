@@ -5,6 +5,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/onfirebyte/simple-jwt-login/db"
 	"github.com/onfirebyte/simple-jwt-login/models"
+	"github.com/samber/lo"
 )
 
 func AddNote(c *fiber.Ctx) error {
@@ -67,12 +68,22 @@ func SeeNote(c *fiber.Ctx) error{
 		}
 	}
 	notes := []models.Note{}
-	dbErr := db.DB.Where("owner_id = ?", user.ID).Find(&notes).Error
+	dbErr := db.DB.Where("owner_id = ?", user.ID).Find(&notes).Order("create_at").Error
 	if dbErr != nil {
 		return c.JSON(fiber.Map{
 			"status" : "note_error",
 			"message": err.Error(),
 		})
 	}
-	return c.JSON(notes)
+	
+	isGroup := bool(c.Query("group") == "true")
+	if !isGroup {
+		return c.JSON(notes)
+	}
+	
+	groups := lo.GroupBy(notes,func(note models.Note) string {
+		return string(note.Status)
+	})
+	return c.JSON(groups)
 }
+
