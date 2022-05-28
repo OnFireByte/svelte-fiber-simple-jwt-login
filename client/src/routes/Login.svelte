@@ -1,7 +1,9 @@
 <script lang="ts">
     import { ErrorResponseType as errRes } from "./../lib/enum/errorResponseType";
-    import { navigate } from "svelte-navigator";
+    import { navigate,useFocus } from "svelte-navigator";
     import { userData, isLogin } from "../stores";
+
+    const registerFocus = useFocus();
     let username = "";
     let password = "";
     let haveError = false;
@@ -68,7 +70,14 @@
 </script>
 
 <form on:submit|preventDefault={handleSubmit}>
-    <input type="text" name="username" placeholder="Username" bind:value={username} required />
+    <input
+        use:registerFocus
+        type="text"
+        name="username"
+        placeholder="Username"
+        bind:value={username}
+        required
+    />
     <input type="password" name="password" placeholder="Password" bind:value={password} required />
     <button type="submit">Login</button>
     {#if haveError}

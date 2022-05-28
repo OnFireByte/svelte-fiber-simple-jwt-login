@@ -1,5 +1,7 @@
 <script lang="ts">
-    import { navigate } from "svelte-navigator";
+    import { navigate,useFocus } from "svelte-navigator";
+
+    const registerFocus = useFocus();
 
     import { ErrorResponseType as errRes } from "./../lib/enum/errorResponseType";
     let username = "";
@@ -61,7 +63,14 @@
 </script>
 
 <form on:submit|preventDefault={handleSubmit}>
-    <input type="text" name="username" placeholder="Username" bind:value={username} required />
+    <input
+        use:registerFocus
+        type="text"
+        name="username"
+        placeholder="Username"
+        bind:value={username}
+        required
+    />
     <input type="text" name="email" placeholder="Email" bind:value={email} required />
     <input type="password" name="password" placeholder="Password" bind:value={password} required />
     <input
