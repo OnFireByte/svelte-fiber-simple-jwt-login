@@ -1,5 +1,7 @@
 <script lang="ts">
     import type Note from "src/types/note";
+    import { createEventDispatcher } from "svelte";
+    const dispatch = createEventDispatcher();
 
     export let data: Note = {
         uuid: "",
@@ -8,7 +10,7 @@
     };
 
     async function handleDelete() {
-        const res = await fetch("http://localhost:5000/api/note", {
+        await fetch("http://localhost:5000/api/note", {
             method: "DELETE",
             headers: {
                 "Content-Type": "application/json",
@@ -18,10 +20,8 @@
                 uuid: data.uuid,
             }),
         });
-        console.log(res);
 
-        const json = res.json();
-        console.log(json);
+        dispatch("change");
     }
 </script>
 
@@ -40,6 +40,7 @@
         width: 30rem;
         justify-content: space-between;
         align-items: center;
+        border-radius: 10px;
     }
     .close {
         cursor: pointer;

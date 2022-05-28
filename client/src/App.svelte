@@ -48,7 +48,7 @@
             {/if}
         </nav>
         <div>
-            <Route path="/">
+            <Route path="/" primary={false}>
                 <Home />
             </Route>
             <Route path="register">
