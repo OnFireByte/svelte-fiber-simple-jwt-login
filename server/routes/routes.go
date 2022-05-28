@@ -14,5 +14,6 @@ func RoutesSetup(app *fiber.App){
 
 	app.Post("api/note", controllers.AddNote)
 	app.Get("api/note", controllers.SeeNote)
+	app.Patch("api/note", controllers.UpdateNote)
 
 }

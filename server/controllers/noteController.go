@@ -87,3 +87,63 @@ func SeeNote(c *fiber.Ctx) error{
 	return c.JSON(groups)
 }
 
+func UpdateNote(c *fiber.Ctx) error{
+	_, err := AuthCheck(c)
+	if err != nil {
+		switch err.Error() {
+		case "No JWT cookie":
+			return c.JSON(fiber.Map{
+						"status" : "no_jwt_cookie",
+						"message": "No JWT cookie, please login",
+					})
+		case "signature is invalid":
+			return c.JSON(fiber.Map{
+						"status" : "login_unauthenticated",
+						"message": "signature is invalid",
+					})
+
+		}
+	}
+
+	var data map[string]string
+	dataErr := c.BodyParser(&data)
+	if dataErr != nil {
+		return c.JSON(fiber.Map{
+			"status" : "data_error",
+			"message": dataErr.Error(),
+		})
+	}
+
+	note_uuid,ok := data["uuid"]
+	if !ok{
+		return c.Status(401).JSON(fiber.Map{
+			"status" : "no_uuid",
+			"message": "note uuid is empty",
+		})
+		
+	}
+	note := models.Note{}
+	dbErr := db.DB.Where("uuid = ?", note_uuid).First(&note).Error
+	if dbErr != nil {
+		return c.Status(404).JSON(fiber.Map{
+			"status" : "note_not_found",
+			"message": "note not found",
+		})
+	}
+
+	if content, ok := data["content"]; ok {
+		note.Content = content
+	}
+
+	if status, ok := data["status"]; ok {
+		note.Status = models.NoteStatus(status)
+	}
+
+	dbErr = db.DB.UpdateColumns(&note).Error
+		
+
+	return c.JSON(fiber.Map{
+		"status" : "success",
+		"message": "note updated",
+	})
+}
