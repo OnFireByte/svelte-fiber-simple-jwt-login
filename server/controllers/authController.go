@@ -37,11 +37,11 @@ func Register(c *fiber.Ctx) error {
 	}
 
 	
-	id := uuid.New().String()
+	new_uuid := uuid.New().String()
 	password, _ := bcrypt.GenerateFromPassword([]byte(regData.Password), bcrypt.DefaultCost)
 
 	user := models.User{
-		Id:       id,
+		Uuid:       new_uuid,
 		Username: regData.Username,
 		Email:    regData.Email,
 		Password: password,
@@ -70,10 +70,10 @@ func Register(c *fiber.Ctx) error {
 	}
 
 	return c.Status(200).JSON(user)
-
 }
 
 func Login(c *fiber.Ctx) error{
+
 	var loginData models.LoginData
 	if err := c.BodyParser(&loginData); err != nil {
 		return c.Status(400).SendString("Error parsing body")
@@ -99,13 +99,13 @@ func Login(c *fiber.Ctx) error{
 	}
 
 	claims := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.StandardClaims{
-		Issuer: user.Id,
+		Issuer: user.Uuid,
 		ExpiresAt: time.Now().Add( 30*24* time.Hour ).Unix(),
 	})
 
 	token, err := claims.SignedString([]byte(os.Getenv("JWT_SIGNING_KEY")))
 	if err != nil {
-		fmt.Println("Error generating token for", user.Id,)
+		fmt.Println("Error generating token for", user.Uuid,)
 		return c.Status(400).SendString("Error generating token")
 	}
 
@@ -126,36 +126,30 @@ func Login(c *fiber.Ctx) error{
 }
 
 func User(c *fiber.Ctx) error{
-	cookie := c.Cookies("jwt")
-	if cookie == "" {
-		c.Status(fiber.StatusUnauthorized)
-		return c.JSON(fiber.Map{
-			"status" : "no_jwt_cookie",
-			"message": "No JWT cookie, please login",
-		})
-	}
-	token, err := jwt.ParseWithClaims(cookie,&jwt.StandardClaims{},func(token *jwt.Token) (interface{},error){
-		return []byte(os.Getenv("JWT_SIGNING_KEY")),nil
-	})
 
+	user, err := AuthCheck(c)
 	if err != nil {
-		c.Status(fiber.StatusUnauthorized)
-		return c.JSON(fiber.Map{
-			"status" : "login_unauthenticated",
-			"message": "signature is invalid",
-		})
+		switch err.Error() {
+		case "No JWT cookie":
+			return c.JSON(fiber.Map{
+						"status" : "no_jwt_cookie",
+						"message": "No JWT cookie, please login",
+					})
+		case "signature is invalid":
+			return c.JSON(fiber.Map{
+						"status" : "login_unauthenticated",
+						"message": "signature is invalid",
+					})
+
+		}
 	}
-
-	claims := token.Claims.(*jwt.StandardClaims)
-	var user models.User
-
-	db.DB.Where("id = ?", claims.Issuer).First(&user)
-
 
 	return c.JSON(user)
 }
 
 func Logout(c *fiber.Ctx) error{
+	// Set jwt cookie to blank and set expires to past 1 hour
+
 	cookie := fiber.Cookie{
 		Name: "jwt",
 		Value: "",
