@@ -114,8 +114,8 @@ func UpdateNote(c *fiber.Ctx) error {
 		})
 	}
 
-	note_uuid,ok := data["uuid"]
-	if !ok{
+	note_uuid,note_uuid_ok := data["uuid"]
+	if !note_uuid_ok{
 		return c.Status(402).JSON(fiber.Map{
 			"status" : "no_uuid",
 			"message": "note uuid field is empty",
@@ -125,16 +125,19 @@ func UpdateNote(c *fiber.Ctx) error {
 	note := models.Note{
 		Uuid: note_uuid,
 	}
-
-	if content, ok := data["content"]; ok {
+	dbData := db.DB.Model(&note).Where("owner_id = ?", User.ID).Where("uuid = ?",note.Uuid)
+	
+	content, contentOk := data["content"]
+	if contentOk{
 		note.Content = content
+		dbData = dbData.UpdateColumn("content",note.Content)
 	}
 
-	if status, ok := data["status"]; ok {
+	status, statusOk := data["status"]
+	if statusOk{
 		note.Status = models.NoteStatus(status)
+		dbData = dbData.UpdateColumn("status",note.Status)
 	}
-
-	dbData := db.DB.Model(&note).Where("owner_id = ?", User.ID).Update("content","status")
 	if dbData.Error != nil {
 		return c.Status(500).JSON(fiber.Map{
 			"status" : "update_error",
@@ -183,7 +186,7 @@ func DeleteNote(c *fiber.Ctx) error {
 	}
 
 	note_uuid,ok := data["uuid"]
-	if !ok{
+	if !ok && note_uuid != ""{
 		return c.Status(402).JSON(fiber.Map{
 			"status" : "no_uuid",
 			"message": "note uuid field is empty",
