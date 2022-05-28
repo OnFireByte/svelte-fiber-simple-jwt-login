@@ -1,9 +1,9 @@
 <script lang="ts">
     import { onMount } from "svelte";
     import { Link, Route, Router, navigate } from "svelte-navigator";
-    import Home from "./routes/Home.svelte";
-    import Register from "./routes/Register.svelte";
-    import Login from "./routes/Login.svelte";
+    import Home from "src/routes/Home.svelte";
+    import Register from "src/routes/Register.svelte";
+    import Login from "src/routes/Login.svelte";
     import { userData, isLogin } from "./stores";
 
     onMount(async () => {

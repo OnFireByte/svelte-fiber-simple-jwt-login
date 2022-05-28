@@ -7,7 +7,7 @@ export default defineConfig({
     plugins: [svelte()],
     resolve: {
         alias: {
-            "@": fileURLToPath(new URL("./src", import.meta.url)),
+            src: fileURLToPath(new URL("./src", import.meta.url)),
         },
     },
 });

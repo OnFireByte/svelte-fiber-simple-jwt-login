@@ -1,6 +1,6 @@
 <script lang="ts">
-    import { userData, isLogin } from "@/stores";
-    import type Note from "@/types/Note";
+    import App from "src/App.svelte";
+    import type Note from "src/types/note";
     import { onMount } from "svelte";
 </script>
 

@@ -3,7 +3,7 @@
 
     const registerFocus = useFocus();
 
-    import { ErrorResponseType as errRes } from "@/lib/enum/errorResponseType";
+    import { ErrorResponseType as errRes } from "src/lib/enum/errorResponseType";
     let username = "";
     let email = "";
     let password = "";
