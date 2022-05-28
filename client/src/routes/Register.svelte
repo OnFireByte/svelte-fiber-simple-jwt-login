@@ -1,9 +1,9 @@
 <script lang="ts">
-    import { navigate,useFocus } from "svelte-navigator";
+    import { navigate, useFocus } from "svelte-navigator";
 
     const registerFocus = useFocus();
 
-    import { ErrorResponseType as errRes } from "./../lib/enum/errorResponseType";
+    import { ErrorResponseType as errRes } from "@/lib/enum/errorResponseType";
     let username = "";
     let email = "";
     let password = "";

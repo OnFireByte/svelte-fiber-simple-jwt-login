@@ -1,5 +1,7 @@
 <script lang="ts">
-    import { userData, isLogin } from "../stores";
+    import { userData, isLogin } from "@/stores";
+    import type Note from "@/types/Note";
+    import { onMount } from "svelte";
 </script>
 
 {#if $isLogin}
