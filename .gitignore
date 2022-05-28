@@ -3,5 +3,6 @@ node_modules
 dist/
 tmp/
 tmp
+server/vendor
 server/tmp/
 *.log
