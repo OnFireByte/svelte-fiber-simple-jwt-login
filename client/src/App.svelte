@@ -21,7 +21,7 @@
     });
     async function logoutHandler() {
         const _ = await fetch("http://localhost:5000/api/logout", {
-            method: "POST",
+            method: "GET",
             credentials: "include",
         });
         console.log("test");

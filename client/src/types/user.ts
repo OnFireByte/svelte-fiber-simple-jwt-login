@@ -1,5 +1,5 @@
 type User = {
-    id: string;
+    uuid: string;
     username: string;
     email: string;
 };
