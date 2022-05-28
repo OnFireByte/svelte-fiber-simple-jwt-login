@@ -154,3 +154,59 @@ func UpdateNote(c *fiber.Ctx) error {
 		"message": "note updated",
 	})
 }
+
+func DeleteNote(c *fiber.Ctx) error {
+	user, err := AuthCheck(c)
+	if err != nil {
+		switch err.Error() {
+		case "No JWT cookie":
+			return c.JSON(fiber.Map{
+						"status" : "no_jwt_cookie",
+						"message": "No JWT cookie, please login",
+					})
+		case "signature is invalid":
+			return c.JSON(fiber.Map{
+						"status" : "login_unauthenticated",
+						"message": "signature is invalid",
+					})
+
+		}
+	}
+
+	var data map[string]string
+	dataErr := c.BodyParser(&data)
+	if dataErr != nil {
+		return c.JSON(fiber.Map{
+			"status" : "data_error",
+			"message": dataErr.Error(),
+		})
+	}
+
+	note_uuid,ok := data["uuid"]
+	if !ok{
+		return c.Status(401).JSON(fiber.Map{
+			"status" : "no_uuid",
+			"message": "note uuid field is empty",
+		})
+		
+	}
+
+	dbData := db.DB.Where("uuid = ?", note_uuid).Where("owner_id = ?",user.ID).Delete(&models.Note{})
+	if dbData.Error != nil {
+		return c.Status(404).JSON(fiber.Map{
+			"status" : "delete_error",
+			"message": dbData.Error.Error(),
+		})
+	}
+	if dbData.RowsAffected == 0{
+		return c.Status(404).JSON(fiber.Map{
+			"status" : "note_not_found",
+			"message": "You don't have this note",
+		})
+	}
+	return c.JSON(fiber.Map{
+		"status" : "success",
+		"message": "note deleted",
+	})
+
+}

@@ -10,10 +10,11 @@ func RoutesSetup(app *fiber.App){
 	app.Post("api/register", controllers.Register)
 	app.Post("api/login", controllers.Login)
 	app.Get("api/user", controllers.User)
-	app.Post("api/logout", controllers.Logout)
+	app.Get("api/logout", controllers.Logout)
 
 	app.Post("api/note", controllers.AddNote)
 	app.Get("api/note", controllers.SeeNote)
 	app.Patch("api/note", controllers.UpdateNote)
+	app.Delete("api/note", controllers.DeleteNote)
 
 }
