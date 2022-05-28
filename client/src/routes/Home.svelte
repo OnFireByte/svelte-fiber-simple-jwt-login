@@ -28,6 +28,7 @@
 
 {#if $isLogin}
     <h1>Hello {$userData.username}!</h1>
+    <AddNote on:submit={fetchNote} />
     <h2>Active</h2>
     <div class="note-container">
         {#each noteActive as data}
