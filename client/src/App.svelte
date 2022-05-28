@@ -87,6 +87,16 @@
         margin: 2rem auto;
         max-width: 14rem;
     }
+    button {
+        padding: 1rem;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+        font-size: 1.2rem;
+        font-weight: 300;
+        background: #ff3e00;
+        color: #fff;
+        cursor: pointer;
+    }
 
     p {
         max-width: 14rem;
