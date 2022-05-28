@@ -1,6 +1,8 @@
 package controllers
 
 import (
+	"sort"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
 	"github.com/onfirebyte/simple-jwt-login/db"
@@ -84,6 +86,13 @@ func SeeNote(c *fiber.Ctx) error{
 	groups := lo.GroupBy(notes,func(note models.Note) string {
 		return string(note.Status)
 	})
+
+	for _,v := range groups {
+		sort.Slice(v,func(i,j int) bool{
+			return v[i].CreatedAt.Before(v[j].CreatedAt)
+		})
+	}
+
 	return c.JSON(groups)
 }
 
