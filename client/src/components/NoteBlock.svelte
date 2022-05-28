@@ -23,13 +23,51 @@
 
         dispatch("change");
     }
+
+    enum status {
+        success = "success",
+        active = "active",
+    }
+    function swapStatus(s: status) {
+        switch (s) {
+            case status.success:
+                return status.active;
+            case status.active:
+                return status.success;
+        }
+    }
+    async function handleStatus(s: status) {
+        await fetch("http://localhost:5000/api/note", {
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            credentials: "include",
+            body: JSON.stringify({
+                uuid: data.uuid,
+                status: s,
+            }),
+        });
+
+        dispatch("change");
+    }
 </script>
 
 <div class="block">
     <div class="content">
         {data.content}
     </div>
-    <div class="close" on:click={handleDelete}>X</div>
+    <div class="right">
+        <div
+            class="swap"
+            on:click={() => {
+                handleStatus(swapStatus(status[data.status]));
+            }}
+        >
+            swap
+        </div>
+        <div class="close" on:click={handleDelete}>X</div>
+    </div>
 </div>
 
 <style>
@@ -53,5 +91,20 @@
         align-items: center;
         justify-content: center;
         font-weight: 700;
+    }
+    .right {
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+    }
+    .swap {
+        cursor: pointer;
+        background-color: #cbcbcb;
+        padding: 0.5rem;
+        height: 0.75rem;
+        border-radius: 200px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
 </style>
