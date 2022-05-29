@@ -4,7 +4,7 @@
     let content = "";
 
     async function handleSubmit() {
-        await fetch("http://localhost:5000/api/note", {
+        await fetch(`${import.meta.env.VITE_SERVER_URL}/api/note`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",

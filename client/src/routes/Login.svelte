@@ -10,7 +10,7 @@
     let errorMessage = "";
 
     export async function handleSubmit() {
-        const res = await fetch("http://localhost:5000/api/login", {
+        const res = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/login`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -30,7 +30,7 @@
         }
         haveError = false;
 
-        const res1 = await fetch("http://localhost:5000/api/user", {
+        const res1 = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/user`, {
             method: "GET",
             credentials: "include",
         });

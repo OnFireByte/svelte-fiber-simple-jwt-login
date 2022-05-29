@@ -10,7 +10,7 @@
     };
 
     async function handleDelete() {
-        await fetch("http://localhost:5000/api/note", {
+        await fetch(`${import.meta.env.VITE_SERVER_URL}/api/note`, {
             method: "DELETE",
             headers: {
                 "Content-Type": "application/json",
@@ -37,7 +37,7 @@
         }
     }
     async function handleStatus(s: status) {
-        await fetch("http://localhost:5000/api/note", {
+        await fetch(`${import.meta.env.VITE_SERVER_URL}/api/note`, {
             method: "PATCH",
             headers: {
                 "Content-Type": "application/json",

@@ -12,7 +12,7 @@
     $: noteSuccess = notes.get("success") || [];
 
     export async function fetchNote() {
-        const res = await fetch("http://localhost:5000/api/note?group=true", {
+        const res = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/note?group=true`, {
             method: "GET",
             credentials: "include",
         });

@@ -6,3 +6,4 @@ tmp
 server/vendor
 server/tmp/
 *.log
+client/.env.myserver

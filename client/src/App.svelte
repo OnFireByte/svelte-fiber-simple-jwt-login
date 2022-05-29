@@ -7,7 +7,7 @@
     import { userData, isLogin } from "./stores";
 
     onMount(async () => {
-        const res = await fetch("http://localhost:5000/api/user", {
+        const res = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/user`, {
             method: "GET",
             credentials: "include",
         });
@@ -20,7 +20,7 @@
         navigate("/");
     });
     async function logoutHandler() {
-        const _ = await fetch("http://localhost:5000/api/logout", {
+        const _ = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/logout`, {
             method: "GET",
             credentials: "include",
         });
